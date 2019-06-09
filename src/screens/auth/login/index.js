@@ -40,26 +40,24 @@ class Login extends Component {
   }
 
   ///////////////////////
-  //// FUNCTIONS ////////
+  //// FUNCTIONS - STARTS ////////
 
   // navigation
   _goToRegister = () => {
-    navigation.signup();
+    //navigation.signup();
+    alert("WIP");
   };
 
   _goToHome = () => {
-    navigation.reset("home");
+    // navigation.reset("home");
+    alert("WIP");
   };
 
   _goToForgot = () => {
-    navigation.forgotPassword({
-      navTitle: strings.login
-    });
-  };
-
-  // logical
-  _updateValue = (field, val, callback) => {
-    this.setState({ [field]: val }, callback);
+    // navigation.forgotPassword({
+    //   navTitle: strings.login
+    // });
+    alert("WIP");
   };
 
   _prepareData = async () => {
@@ -79,33 +77,31 @@ class Login extends Component {
   };
 
   _showHidePassword = () => {
-    this._updateValue("hidePassword", !this.state.hidePassword);
+    this.setState({ hidePassword: !this.state.hidePassword })
   };
 
   _onRemember = () => {
-    const { rememberMe } = this.state;
-    if (rememberMe) {
-      this._removeUserFromRemember();
-      this._updateValue("email", "");
-      this._updateValue("password", "");
-      this._updateValue("rememberMe", false);
+    if (this.state.rememberMe) {
+      this.setState({ rememberMe: false });
     } else {
-      this._updateValue("rememberMe", true);
+      this.setState({ rememberMe: true });
     }
   };
 
-  _rememberUser = async () => {
+  _saveUserData = async () => {
     const { email, password, rememberMe } = this.state;
     if (rememberMe) {
-      await local.insert("USER_REMEMBER", {
+      await local.insert("USER_CREDENTIALS", {
         email,
         password: Global.encrypt(email, password)
       });
+    }else{
+      this._clearUserData();
     }
   };
 
-  _removeUserFromRemember = async () => {
-    await local.cleanOne("USER_REMEMBER");
+  _clearUserData = async () => {
+    await local.cleanOne("USER_CREDENTIALS");
   };
 
   _togglePassword = () => {
@@ -120,35 +116,32 @@ class Login extends Component {
   };
 
   _onLogin = () => {
-    this._goToHome();
-    // if (this._validate()) {
-    //   const { email, password } = this.state;
-    //   const param = {
-    //     email,
-    //     password
-    //   };
-    //   this._updateValue("loading", true);
-    //   apis
-    //     .login(param)
-    //     .then(() => {
-    //       this._rememberUser();
-    //       this._updateValue("loading", false, () => {
-    //         this._goToHome();
-    //       });
-    //     })
-    //     .catch(err => {
-    //       this._updateValue("loading", false, () => {
-    //         Alert.alert(strings.error, err);
-    //       });
-    //     });
-    // }
+    if (this._validate()) {
+      const { email, password } = this.state;
+      const param = {
+        email,
+        password
+      };
+      this.setState({ loading: true });
+      apis
+        .login(param)
+        .then(() => {
+          this._saveUserData();
+          this.setState({ loading: false });
+          this._goToHome();
+        })
+        .catch(err => {
+          this.setState({ loading: false });
+          Alert.alert(strings.error, err);
+        });
+    }
   };
 
-  //// FUNCTIONS ////////
+  //// FUNCTIONS - ENDS ////////
   ///////////////////////
 
   ////////////////////////
-  ////// VIEW ////////////
+  ////// VIEW - STARTS ////////////
 
   // Content
   renderContent = () => {
@@ -170,10 +163,10 @@ class Login extends Component {
       <View style={styles.topContainer}>
         <Image file={images.app_icon} style={styles.icon} />
         <Text semibold size={28} color={colors.black}>
-          {strings.education}
+          {strings.reactNative}
         </Text>
         <Text semibold size={28} color={colors.black}>
-          {strings.walkThrough}
+          {strings.demoApp}
         </Text>
       </View>
     );
@@ -251,7 +244,7 @@ class Login extends Component {
   render() {
     return <Container>{this.renderContent()}</Container>;
   }
-  ////// VIEW ////////////
+  ////// VIEW - ENDS ////////////
   ////////////////////////
 }
 
