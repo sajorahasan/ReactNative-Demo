@@ -5,7 +5,7 @@ import {
   ////////// Splash /////////
   Splash,
   ////////// AUTH ////////////
-  Login,
+  Login
   ////////// HOME ////////////
 } from "../screens";
 import { transitionCustomConfig } from "./config/transitionConfig";
@@ -21,10 +21,9 @@ const routes = Actions.create(
 
     {/* AUTH */}
     <Scene key="login" component={Login} />
-    
-    {/* HOME > COMMON */}
-    <Scene key="home" component={Home} />
 
+    {/* HOME > COMMON */}
+    {/* <Scene key="home" component={Home} /> */}
   </Scene>
 );
 
