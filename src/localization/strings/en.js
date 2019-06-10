@@ -13,6 +13,8 @@ export default {
   success: "Success",
   areYouSure: "Are you sure want to confirm?",
   ok: "Ok",
+  yes: "Yes",
+  no: "No",
   loading: "Loading ...",
 
   //VALIDATION ERRORS
@@ -32,5 +34,12 @@ export default {
   password: "Password",
   rememberMe: "Remember me",
   forgotPasswordQ: "Forgot Password?",
-  
+  loginSuccess: "Login Successfull!!!",
+
+  //HOME
+  home: "Home",
+  welcome: "Welcome",
+  logout: "Logout",
+  logoutConfirm: "Are you sure, you want to logout?",
+  logoutSuccess: "Logout Successfull!!!"
 };

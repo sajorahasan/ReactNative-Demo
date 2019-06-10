@@ -1,11 +1,15 @@
 //Landing
-import Splash from "./Splash";
+import Splash from "./splash";
 //Auth
 import { Login } from "./auth";
+//Home
+import Home from "./home";
 
 export {
   /////////// Landing //////////
   Splash,
   ////////// Auth ////////////
-  Login
+  Login,
+  ////////// Home ////////////
+  Home
 };

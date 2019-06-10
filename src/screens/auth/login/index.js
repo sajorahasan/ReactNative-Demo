@@ -42,6 +42,11 @@ class Login extends Component {
   ///////////////////////
   //// FUNCTIONS - STARTS ////////
 
+  // react
+  componentDidMount() {
+    this._prepareData();
+  }
+
   // navigation
   _goToRegister = () => {
     //navigation.signup();
@@ -49,8 +54,7 @@ class Login extends Component {
   };
 
   _goToHome = () => {
-    // navigation.reset("home");
-    alert("WIP");
+    navigation.reset("home");
   };
 
   _goToForgot = () => {
@@ -61,23 +65,21 @@ class Login extends Component {
   };
 
   _prepareData = async () => {
-    const USER_REMEMBER = await local.getOne("USER_REMEMBER");
-    await local.get();
-    if (USER_REMEMBER) {
-      this._updateValue("email", USER_REMEMBER.data.email);
-      this._updateValue(
-        "password",
-        Global.decrypt(USER_REMEMBER.data.email, USER_REMEMBER.data.password)
-      );
-      this._updateValue("rememberMe", true);
-      this._updateValue("loading", false);
+    const userData = await local.getOne("USER_CREDENTIALS");
+    if (userData) {
+      this.setState({
+        email: userData.data.email,
+        password: Global.decrypt(userData.data.email, userData.data.password),
+        rememberMe: true,
+        loading: false
+      });
     } else {
-      this._updateValue("loading", false);
+      this.setState({ loading: false });
     }
   };
 
   _showHidePassword = () => {
-    this.setState({ hidePassword: !this.state.hidePassword })
+    this.setState({ hidePassword: !this.state.hidePassword });
   };
 
   _onRemember = () => {
@@ -90,13 +92,12 @@ class Login extends Component {
 
   _saveUserData = async () => {
     const { email, password, rememberMe } = this.state;
+    await local.insert("EMAIL", { email });
     if (rememberMe) {
       await local.insert("USER_CREDENTIALS", {
         email,
         password: Global.encrypt(email, password)
       });
-    }else{
-      this._clearUserData();
     }
   };
 
@@ -105,7 +106,7 @@ class Login extends Component {
   };
 
   _togglePassword = () => {
-    this._updateValue("securePassword", !this.state.securePassword);
+    this.setState({ securePassword: !this.state.securePassword });
   };
 
   _validate = () => {
@@ -115,7 +116,7 @@ class Login extends Component {
     }
   };
 
-  _onLogin = () => {
+  _onLogin = async () => {
     if (this._validate()) {
       const { email, password } = this.state;
       const param = {
@@ -123,17 +124,38 @@ class Login extends Component {
         password
       };
       this.setState({ loading: true });
-      apis
-        .login(param)
-        .then(() => {
-          this._saveUserData();
-          this.setState({ loading: false });
-          this._goToHome();
-        })
-        .catch(err => {
-          this.setState({ loading: false });
-          Alert.alert(strings.error, err);
-        });
+
+      setTimeout(() => {
+        console.log("hereeee");
+      }, 300);
+      if (email === "sajorahasan@gmail.com" && password === "#reset123") {
+        this._saveUserData();
+        this.setState({ loading: false });
+        Alert.alert(strings.success, strings.loginSuccess, [
+          {
+            text: strings.ok.toUpperCase(),
+            onPress: this._goToHome
+          },
+          {
+            cancelable: false
+          }
+        ]);
+      } else {
+        this.setState({ loading: false });
+        Alert.alert(strings.error, "Incorrect Credentails");
+      }
+
+      // apis
+      //   .login(param)
+      //   .then(() => {
+      //     this._saveUserData();
+      //     this.setState({ loading: false });
+      //     this._goToHome();
+      //   })
+      //   .catch(err => {
+      //     this.setState({ loading: false });
+      //     Alert.alert(strings.error, err);
+      //   });
     }
   };
 
@@ -186,7 +208,7 @@ class Login extends Component {
           color={colors.black}
           style={styles.input}
           value={email}
-          onChangeText={text => this._updateValue("email", text)}
+          onChangeText={text => this.setState({ email: text })}
         />
         <TextInput
           placeholder={strings.password}
@@ -195,7 +217,7 @@ class Login extends Component {
           color={colors.black}
           style={styles.input}
           value={password}
-          onChangeText={text => this._updateValue("password", text)}
+          onChangeText={text => this.setState({ password: text })}
           passwordIcon
           secureTextEntry={this.state.securePassword}
           onPassIcon={this._togglePassword}

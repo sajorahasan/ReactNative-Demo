@@ -6,6 +6,10 @@ import PropTypes from "prop-types";
 import { StyleSheet, Text, View } from "react-native";
 
 export default class App extends Component {
+  constructor(props) {
+    super(props);
+    console.log("hehehe");
+  }
   render() {
     return (
       <View style={styles.container}>
