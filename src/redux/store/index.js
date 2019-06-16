@@ -13,6 +13,8 @@ if (__DEV__) {
 
 const enhancer = compose(middleware);
 
+export const store = createStore(reducers, undefined, enhancer);
+
 export default function configureStore(initialState) {
   const store = createStore(reducers, initialState, enhancer);
   return store;

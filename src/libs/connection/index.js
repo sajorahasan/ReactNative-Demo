@@ -1,34 +1,35 @@
-import { NetInfo } from "react-native";
+import { NetInfo, AppState } from "react-native";
+import { store } from "../../redux/store/";
+import * as types from "../../redux/constants/ActionsTypes";
 import log from "@log";
 
-class connection {}
+export default class Connection {
+  startListener = () => {
+    AppState.addEventListener("change", this._handleAppStateChange);
 
-connection.status = () => {
-  return new Promise((resolve, reject) => {
-    try {
-      resolve(NetInfo.getConnectionInfo());
-    } catch (err) {
-      log.error("Connection Error :-", err);
-      reject(err);
-    }
-  });
-};
+    // Network Listener
+    NetInfo.isConnected.addEventListener(
+      "connectionChange",
+      this.handleConnectionChange
+    );
+  };
 
-connection.startListener = () => {
-  function handleFirstConnectivityChange(connectionInfo) {
-    log.info("Start Listener", connectionInfo.type);
-  }
-  NetInfo.addEventListener("connectionChange", handleFirstConnectivityChange);
-};
+  handleConnectionChange = isConnected => {
+    log.info("handleConnectionChange", isConnected);
+    store.dispatch({ type: types.NETWORK_STATUS, isConnected });
+  };
 
-connection.removeListener = () => {
-  function handleFirstConnectivityChange(connectionInfo) {
-    log.info("Remove Listener", connectionInfo.type);
-  }
-  NetInfo.removeEventListener(
-    "connectionChange",
-    handleFirstConnectivityChange
-  );
-};
+  _handleAppStateChange = nextAppState => {
+    log.info("_handleAppStateChange", nextAppState);
+    store.dispatch({ type: types.APP_STATUS, nextAppState });
+  };
 
-export default connection;
+  cleanUp = () => {
+    NetInfo.removeEventListener(
+      "connectionChange",
+      this.handleConnectionChange
+    );
+
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  };
+}
